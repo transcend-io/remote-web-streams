@@ -12,13 +12,13 @@ export interface MessagePortSinkOptions<W = any> {
   transferChunk?: TransferChunkCallback<W>;
 }
 
-const WritableStream = NativeWritableStream || WritableStreamPonyfill;
+const WS = NativeWritableStream || WritableStreamPonyfill;
 
 export function fromWritablePort<W = any>(
   port: MessagePort,
   options?: MessagePortSinkOptions<W>
 ): WritableStream<W> {
-  return new WritableStream<W>(new MessagePortSink(port, options));
+  return new WS<W>(new MessagePortSink(port, options));
 }
 
 export class MessagePortSink<W> implements UnderlyingSink<W> {

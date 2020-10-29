@@ -1,5 +1,5 @@
-import { ReadableStream, WritableStream } from 'web-streams-polyfill';
-import { MockMessageChannel, MockMessagePort } from './MessageChannel';
+import { ReadableStream, WritableStream } from "web-streams-polyfill";
+import { MockMessageChannel, MockMessagePort } from "./MessageChannel";
 
 declare global {
   interface Window {
@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-self.ReadableStream = ReadableStream;
-self.WritableStream = WritableStream;
+self.ReadableStream = ReadableStream as any;
+self.WritableStream = WritableStream as any;
 self.MessageChannel = MockMessageChannel;
 self.MessagePort = MockMessagePort;
