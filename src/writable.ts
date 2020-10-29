@@ -1,18 +1,27 @@
-import { NativeWritableStream } from './streams/native';
-import { ReceiverMessage, ReceiverType, SenderMessage, SenderType } from './protocol';
-import { TransferChunkCallback } from './transfer';
+import { WritableStream as WritableStreamPonyfill } from "web-streams-polyfill/ponyfill";
+import { NativeWritableStream } from "./streams/native";
+import {
+  ReceiverMessage,
+  ReceiverType,
+  SenderMessage,
+  SenderType,
+} from "./protocol";
+import { TransferChunkCallback } from "./transfer";
 
 export interface MessagePortSinkOptions<W = any> {
   transferChunk?: TransferChunkCallback<W>;
 }
 
-export function fromWritablePort<W = any>(port: MessagePort,
-                                          options?: MessagePortSinkOptions<W>): WritableStream<W> {
-  return new NativeWritableStream<W>(new MessagePortSink(port, options));
+const WritableStream = NativeWritableStream || WritableStreamPonyfill;
+
+export function fromWritablePort<W = any>(
+  port: MessagePort,
+  options?: MessagePortSinkOptions<W>
+): WritableStream<W> {
+  return new WritableStream<W>(new MessagePortSink(port, options));
 }
 
 export class MessagePortSink<W> implements UnderlyingSink<W> {
-
   private readonly _transferChunk?: TransferChunkCallback<W>;
 
   private _controller!: WritableStreamDefaultController;
@@ -22,7 +31,10 @@ export class MessagePortSink<W> implements UnderlyingSink<W> {
   private _readyReject!: (reason: any) => void;
   private _readyPending!: boolean;
 
-  constructor(private readonly _port: MessagePort, options: MessagePortSinkOptions<W> = {}) {
+  constructor(
+    private readonly _port: MessagePort,
+    options: MessagePortSinkOptions<W> = {}
+  ) {
     this._transferChunk = options.transferChunk;
     this._resetReady();
     this._port.onmessage = (event) => this._onMessage(event.data);
@@ -38,10 +50,12 @@ export class MessagePortSink<W> implements UnderlyingSink<W> {
   write(chunk: W, controller: WritableStreamDefaultController) {
     const message: SenderMessage = {
       type: SenderType.WRITE,
-      chunk
+      chunk,
     };
     // Send chunk, optionally transferring its contents
-    let transferList: Transferable[] = this._transferChunk ? this._transferChunk(chunk) : [];
+    let transferList: Transferable[] = this._transferChunk
+      ? this._transferChunk(chunk)
+      : [];
     if (transferList.length) {
       this._port.postMessage(message, transferList);
     } else {
@@ -55,7 +69,7 @@ export class MessagePortSink<W> implements UnderlyingSink<W> {
 
   close() {
     const message: SenderMessage = {
-      type: SenderType.CLOSE
+      type: SenderType.CLOSE,
     };
     this._port.postMessage(message);
     this._port.close();
@@ -64,7 +78,7 @@ export class MessagePortSink<W> implements UnderlyingSink<W> {
   abort(reason: any) {
     const message: SenderMessage = {
       type: SenderType.ABORT,
-      reason
+      reason,
     };
     this._port.postMessage(message);
     this._port.close();
@@ -108,5 +122,4 @@ export class MessagePortSink<W> implements UnderlyingSink<W> {
     this._readyReject(reason);
     this._readyPending = false;
   }
-
 }
