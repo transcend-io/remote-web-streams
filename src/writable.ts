@@ -1,5 +1,5 @@
-import { WritableStream as WritableStreamPonyfill } from "web-streams-polyfill/ponyfill";
 import { NativeWritableStream } from "./streams/native";
+import { WritableStream as WritableStreamPonyfill } from "web-streams-polyfill/ponyfill";
 import {
   ReceiverMessage,
   ReceiverType,
