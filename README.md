@@ -1,5 +1,5 @@
-# remote-web-streams
-[Web streams][streams-spec] that work across web workers and `<iframe>`s.
+# remote-web-streams (with Safari 14 support)
+[Web streams][streams-spec] that work across web workers and `<iframe>`s. In addition to your typical modern browsers, this fork also works with Safari 14.
 
 ## Problem
 Suppose you want to process some data that you've downloaded somewhere. The processing is quite CPU-intensive,
