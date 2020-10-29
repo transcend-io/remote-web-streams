@@ -1,6 +1,6 @@
 {
   "name": "@transcend-io/remote-web-streams",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Web streams that work across web workers and iframes.",
   "main": "dist/remote-web-streams",
   "types": "dist/types/index.d.ts",

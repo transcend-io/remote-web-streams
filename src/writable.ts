@@ -1,5 +1,5 @@
 import { NativeWritableStream } from "./streams/native";
-import { WritableStream as WritableStreamPonyfill } from "web-streams-polyfill/ponyfill";
+import { WritableStream as WritableStreamPonyfill } from "web-streams-polyfill/ponyfill/es2018";
 import {
   ReceiverMessage,
   ReceiverType,
@@ -12,7 +12,8 @@ export interface MessagePortSinkOptions<W = any> {
   transferChunk?: TransferChunkCallback<W>;
 }
 
-const WS = NativeWritableStream || WritableStreamPonyfill;
+const WS = ((NativeWritableStream as any) ||
+  WritableStreamPonyfill) as typeof NativeWritableStream;
 
 export function fromWritablePort<W = any>(
   port: MessagePort,
